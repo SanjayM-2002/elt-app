@@ -4,6 +4,7 @@ const cors = require('cors');
 dotenv.config();
 const PORT = process.env.PORT;
 const uploadRoutes = require('./routes/uploadRoute');
+const fetchRoutes = require('./routes/fetchRoute');
 const { start } = require('./kafka/kafka');
 
 const app = express();
@@ -16,6 +17,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/upload-service', uploadRoutes);
+app.use('/api/fetch-service', fetchRoutes);
 
 const initializeServer = async () => {
   try {
