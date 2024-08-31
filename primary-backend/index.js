@@ -3,6 +3,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 dotenv.config();
 const PORT = process.env.PORT;
+const uploadRoutes = require('./routes/uploadRoute');
+const { start } = require('./kafka/kafka');
 
 const app = express();
 app.use(cors());
@@ -13,6 +15,18 @@ app.get('/health', (req, res) => {
   res.status(200).json({ message: 'Health check success' });
 });
 
-app.listen(PORT, () => {
-  console.log(`upload-service is listening on http://localhost:${PORT}/`);
-});
+app.use('/api/upload-service', uploadRoutes);
+
+const initializeServer = async () => {
+  try {
+    await start();
+    app.listen(PORT, () => {
+      console.log(`upload-service is listening on http://localhost:${PORT}/`);
+    });
+  } catch (error) {
+    console.error('Failed to start application:', error);
+    process.exit(1); // Exit the process if Kafka connection fails
+  }
+};
+
+initializeServer();
